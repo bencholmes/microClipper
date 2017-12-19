@@ -1,6 +1,6 @@
-// Title: lowShelf
-// Author: Ben Holmes
-// Date: 2017/12/19
+// Title:   lowShelf
+// Author:  Ben Holmes
+// Date:    2017/12/19
 // License: GPL v3.0
 
 // A class that implements low-shelf filter in state-space topology.
@@ -14,15 +14,17 @@ template<class T>
 class lowShelf{
     
 public:
-    // default constructor
+    // Default constructor
     lowShelf():lowShelf(48e3,0.1778,500){ };
     
-    // destructor
+    // Destructor
     ~lowShelf() { };
     
-    lowShelf(T samplingFrequency): lowShelf(samplingFrequency,0.1778,500){ };
+    // Constructor with sampling frequency
+    lowShelf(T samplingFrequency):
+    lowShelf(samplingFrequency,0.1778,500){ };
     
-    // Most explicit constructor.
+    // Constructor for all parameters
     lowShelf(T samplingFrequency, T stopBandGain, T cutoffFrequency):
     sFreq(samplingFrequency), cutoff(cutoffFrequency)
     {
@@ -31,7 +33,7 @@ public:
     }
     
     // Run a single sample through the filter.
-    T run(T input)
+    T run(const T input)
     {
         T y = Cy*state + Dy*input;
         state = Ax*state + Bx*input;
@@ -40,14 +42,14 @@ public:
     }
     
     // Setter for gain
-    void setGain(T stopBandGain)
+    void setGain(const T stopBandGain)
     {
         gain = std::pow(10,0.05*stopBandGain);
         deriveStateSpace();
     }
     
     // Setter for cutoff
-    void setCutoff(T cutoffFrequency)
+    void setCutoff(const T cutoffFrequency)
     {
         cutoff = cutoffFrequency;
         deriveStateSpace();
@@ -55,6 +57,7 @@ public:
     
 private:
     
+    // Update values of the state space coefficients
     void deriveStateSpace()
     {
         // Common terms
@@ -81,7 +84,7 @@ private:
     T gain;
     T cutoff;
     
-    // State
+    // State of discretised capacitor
     T state = 0;
     
     // State space matrices

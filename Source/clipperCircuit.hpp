@@ -1,9 +1,9 @@
-// Title: clipperCircuit
-// Author: Ben Holmes
-// Date: 2017/12/19
+// Title:   clipperCircuit
+// Author:  Ben Holmes
+// Date:    2017/12/19
 // License: GPL v3.0
 
-// A class that implements a diode clipper circuit
+// A class that implements a diode clipper circuits
 
 #ifndef CLIPPERCIRCUIT_HPP
 #define CLIPPERCIRCUIT_HPP
@@ -22,18 +22,19 @@ public:
     clipperCircuit(T fs)
     : clipperCircuit(fs, 1., 1.) {};
     
-    // Most explicit constructor, initiliases ideality and asymmetry
+    // Constructor for
     clipperCircuit(T fs, T ideality, T asymmetry)
-    : sFreq(fs), Is(1e-7), C1(1e-6), asym(asymmetry), state(0.), yn1(0.)
+    : sFreq(fs), Is(1e-7), C1(1e-6), asym(asymmetry),
+    state(0.), yn1(0.)
     {
-        NVt = ideality*Vt;
+        setIdeality(ideality);
     }
     
     // Destructor
     ~clipperCircuit(){};
     
     // Single sample calculation
-    T run(T uVal)
+    T run(const T uVal)
     {
         T residual = 10;
         unsigned int numIters = 0;
@@ -57,11 +58,15 @@ public:
             eNeg = fastExp(-yCur/(asym*NVt));
             
             // Calculate step
-            funcValue = pConst - (yCur/R1) - ((2.*C1*sFreq)*yCur) - (Is*(ePos - eNeg));
-            derivativeValue = (-1./R1) - (2.*C1*sFreq) - (Is*((ePos/(NVt)) + (eNeg/(asym*NVt))));
+            funcValue = pConst - (yCur/R1)
+            - ((2.*C1*sFreq)*yCur) - (Is*(ePos - eNeg));
+            
+            derivativeValue = (-1./R1) - (2.*C1*sFreq)
+            - (Is*((ePos/(NVt)) + (eNeg/(asym*NVt))));
+            
             step = -funcValue/derivativeValue;
             
-            // Residual is only step size. (Function value also applicable)
+            // Residual is only step size.
             residual = std::fabs(step);
             
             yCur += step;
@@ -82,13 +87,14 @@ public:
         return yCur;
     }
     
-    // Getters and setters
-    void setIdeality(T idealityFactor)
+    // Set ideality factor, combined with thermal voltage
+    void setIdeality(const T idealityFactor)
     {
         NVt = idealityFactor*Vt;
     }
     
-    void setCapacitance(T capacitance)
+    // Set capacitor value.
+    void setCapacitance(const T capacitance)
     {
         C1 = capacitance;
     }
@@ -96,22 +102,24 @@ public:
     // Forward voltage generally indicates voltage amplitude of
     // the diode clipper, and can be used to scale the gain of
     // and effect.
-    T getForwardVoltage()
+    T getForwardVoltage() const
     {
         return NVt*std::log(1.e-3/(2*Is) + 1);
     }
     
-    void setAsymmetry(T asymmetry)
+    // Set asymmetry in the exponent of the diodes.
+    void setAsymmetry(const T asymmetry)
     {
         asym = asymmetry;
     }
     
 protected:
     
-    T fastExp(T index)
+    // Approximate exp as lim( 1 + x/n)^n as n tends to infinity
+    // Using n = 1024;
+    T fastExp(const T index)
     {
-        // Approximate exp as lim( 1 + x/n)^n as n tends to infinity
-        // Using n = 1024;
+        
         double exp = 1. + index/1024.;
         exp *= exp; exp *= exp; exp *= exp;
         exp *= exp; exp *= exp; exp *= exp;
@@ -130,7 +138,7 @@ protected:
     T C1;               // Capacitor
     T asym = 1;         // Multiplier of one ideality
     
-    // Constants
+    // Circuit constants
     const T Vt = 25.83e-3; // Thermal voltage
     const T R1 = 2200;     // Resistor
     

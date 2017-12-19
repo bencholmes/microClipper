@@ -1,4 +1,4 @@
-# microClipper-private
+# microClipper
 
 Overdrive plugin based on the traditional diode-clipping circuit.
 

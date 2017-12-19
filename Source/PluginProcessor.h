@@ -64,8 +64,8 @@ public:
     void setPregain(double newGainFactor);
     double getPregain();
     
-    double brightness = 0.2;
-    double distortion = 0.35;
+    double brightness = 0.5;
+    double distortion = 0.4;
     double warmth = 0.5;
     
 
@@ -75,7 +75,7 @@ private:
     lowShelf<double> *postFilter = NULL;
     
     const double filterCutoff = 500;
-    double preGain = 1.5;
+    double preGain = 1.1;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MicroClipperAudioProcessor)
